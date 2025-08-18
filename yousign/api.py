@@ -2,9 +2,9 @@ from enum import StrEnum
 from requests import request as req
 from typing import Optional, Tuple, Union, List
 from .uri import BaseURL
-from .data import Signature
-from .signature_request import SignatureRequest
+from .signature import Signature
 from .field import Field
+from .signer import Signer
 from .document import Document
 from io import TextIOWrapper
 import json
@@ -63,28 +63,35 @@ class YouSign:
 
         return content
 
-    def create_signature(self, name: str, delivery_mode: Signature.DeliveryMode) -> SignatureRequest:
+    def create_signature(self, data: Signature.Data) -> Signature:
         content = self._req(
             "POST",
             BaseURL.get_signatures(),
             YouSign.ContentType.JSON,
-            json={
-                'name': name,
-                'delivery_mode': str(delivery_mode)
-            }
+            json=data.__dict__
         )
 
-        return SignatureRequest(self, **content)
+        return Signature(self, **content)
 
-    def get_signatures(self, id: Optional[str]) -> Union[List[SignatureRequest] | SignatureRequest]:
+    def save_signature(self, signature_id: str, data: Signature.Data) -> Signature.Data:
+        content = self._req(
+            "PATCH",
+            BaseURL.get_signatures(signature_id),
+            YouSign.ContentType.JSON,
+            json=data.__dict__
+        )
+
+        return Signature.Data(**content)
+
+    def get_signatures(self, id: Optional[str]) -> Union[List[Signature] | Signature]:
         contents = self._req("GET", BaseURL.get_signatures(id))
 
         if id is not None:
-            return SignatureRequest(self, **contents)
+            return Signature(self, **contents)
 
         signatures = []
         for content in contents['data']:
-            signatures.append(SignatureRequest(self, **content))
+            signatures.append(Signature(self, **content))
 
         return signatures
 
@@ -97,14 +104,44 @@ class YouSign:
 
     # Signers
 
-    def create_signer(self, signature_id: str):
-        pass
+    def create_signer(self, signature_id: str, data: Signer.Data) -> Signer:
+        content = self._client._req(
+            "POST",
+            BaseURL.get_signers(signature_id),
+            YouSign.ContentType.JSON,
+            json=data.__dict__
+        )
+        return Signer(self, signature_id, **content)
 
     def delete_signer(self, signature_id: str, signer_id: str) -> None:
-        pass
+        self._client._req(
+            "DELETE",
+            BaseURL.get_signers(signature_id, signer_id),
+            YouSign.ContentType.JSON,
+        )
 
     def get_signers(self, signature_id: str, signer_id: Optional[str]):
-        pass
+        content = self._client._req(
+            "GET",
+            BaseURL.get_signers(signature_id, signer_id),
+            YouSign.ContentType.JSON,
+        )
+
+        if signer_id is not None:
+            return Signer(self, signature_id, **content)
+
+        signers = []
+        for content in content['data']:
+            signers.append(Signer(self, signature_id, **content))
+
+    def save_signer(self, signature_id: str, signer_id: str, data: Signer.Data) -> Signer.Data:
+        content = self._client._req(
+            "PATCH",
+            BaseURL.get_signers(signature_id, signer_id),
+            YouSign.ContentType.JSON,
+            json=data.__dict__
+        )
+        return Signer.Data(**content)
 
     # Document
     class DocumentArgs:
@@ -138,6 +175,15 @@ class YouSign:
             BaseURL.get_documents(signature_id, document_id),
             YouSign.ContentType.NONE,
         )
+
+    def save_document(self, signature_id: str, document_id: str, data: Document.Data) -> Document.Data:
+        content = self._client._req(
+            "PATCH",
+            BaseURL.get_documents(signature_id, document_id),
+            YouSign.ContentType.JSON,
+            json=data.__dict__
+        )
+        return Document.Data(**content)
 
     # Approvers
     def create_approvers(self):
