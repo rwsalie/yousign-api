@@ -1,0 +1,48 @@
+from typing import Optional, List, Tuple
+from yousign.datasets import SignatureData, SignerData, DocumentData
+
+import yousign.client as ys_client
+import yousign.type.document as doc
+import yousign.type.signer as signer
+from io import TextIOWrapper
+
+
+class Signature:
+    client: 'ys_client.Client'
+    data: SignatureData
+    signers: List['signer.Signer']
+    documents: List['doc.Document']
+
+    def __init__(self, client: 'ys_client.Client', **kwargs):
+        self.client = client
+        self.data = SignatureData(**kwargs)
+        self.signers = []
+        self.documents = []
+        self.labels = []
+        self.approvers = []
+        self.fields = []
+
+    def delete(self):
+        self.client.delete_signature(self.data.id)
+
+    # Signer
+
+    def add_signer(self, signer: SignerData):
+        self.client.create_signer(self.data.id, signer)
+
+    def rem_signer(self, signer_id: str):
+        self.client.delete_signer(self.data.id, signer_id)
+
+    def get_signers(self):
+        return self.client.get_signers(self.data.id)
+
+    # Document
+
+    def add_doc(self, document: DocumentData, file: Tuple[str, TextIOWrapper, str]):
+        self.client.create_document(self.data.id, document, file)
+
+    def rem_document(self, document_id: str):
+        self.client.rem(self.data.id, document_id)
+
+    def get_documents(self):
+        return self.client.get_documents(self.data.id)

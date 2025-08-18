@@ -1,0 +1,30 @@
+from os import environ as env
+from yousign.api import YouSign
+from yousign.signature import Signature
+from yousign.document import Document
+from yousign.signer import Signer
+
+
+client = YouSign(env['YOUSIGN_TOKEN'])
+
+new_signature = client.create_signature(
+    name='Your best terms',
+    delivery_mode=Signature.DeliveryMode.EMAIL
+)
+
+new_document = client.create_document(
+    new_signature.id,
+    document=Document.Data(
+
+    )
+)
+
+new_signer = client.create_signer(
+    new_signature.id,
+    Signer.Data(
+        
+    )
+)
+
+# Then Active your sign
+new_signature.activate()
