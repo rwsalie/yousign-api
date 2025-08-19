@@ -9,6 +9,7 @@ license = {text = "ISC"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dotenv (>=0.9.9,<0.10.0)"
 ]
 
 

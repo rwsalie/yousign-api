@@ -35,8 +35,14 @@ class Client:
             json=self.data.__dict__
         )
 
+    def change_signature_status(self, signature_id: str, query: str) -> None:
+        self.req_handler._req(
+            "POST", Endpoint.get_signatures(signature_id, query=query)
+        )
+
     def get_signatures(self, id: Optional[str] = None) -> Union[List[Signature] | Signature]:
-        contents = self.req_handler._req("GET", Endpoint.get_signatures(id))
+        contents = self.req_handler._req(
+            "GET", Endpoint.get_signatures(id))
 
         if id is not None:
             return Signature(self, **contents)
@@ -57,7 +63,8 @@ class Client:
     # Signers
 
     def create_signer(self, signature_id: str, data: SignerData) -> Signer:
-        content = self._client.req_handler._req(
+        print(data.fields)
+        content = self.req_handler._req(
             "POST",
             Endpoint.get_signers(signature_id),
             RequestHandler.ContentType.JSON,
@@ -66,14 +73,14 @@ class Client:
         return Signer(self, signature_id, **content)
 
     def delete_signer(self, signature_id: str, signer_id: str) -> None:
-        self._client.req_handler._req(
+        self.req_handler._req(
             "DELETE",
             Endpoint.get_signers(signature_id, signer_id),
             RequestHandler.ContentType.JSON,
         )
 
     def get_signers(self, signature_id: str, signer_id: Optional[str] = None) -> Union[List[Signer] | Signer]:
-        content = self._client.req_handler._req(
+        content = self.req_handler._req(
             "GET",
             Endpoint.get_signers(signature_id, signer_id),
             RequestHandler.ContentType.JSON,
@@ -89,7 +96,7 @@ class Client:
         return signers
 
     def save_signer(self, signature_id: str, signer_id: str, data: SignerData) -> None:
-        self._client.req_handler._req(
+        self.req_handler._req(
             "PATCH",
             Endpoint.get_signers(signature_id, signer_id),
             RequestHandler.ContentType.JSON,
@@ -110,20 +117,20 @@ class Client:
             Endpoint.get_documents(signature_id),
             RequestHandler.ContentType.NONE,
             files={"file": file},
-            json=document.__dict__
+            data=document.__dict__
         )
 
         return Document(self, signature_id, **content)
 
     def delete_document(self, signature_id: str, document_id: str) -> None:
-        self._client.req_handler._req(
+        self.req_handler._req(
             "DELETE",
             Endpoint.get_documents(signature_id, document_id),
             RequestHandler.ContentType.NONE,
         )
 
     def get_documents(self, signature_id: str, document_id: Optional[str] = None) -> Union[List[Document] | Document]:
-        content = self._client.req_handler._req(
+        content = self.req_handler._req(
             "DELETE",
             Endpoint.get_documents(signature_id, document_id),
         )
@@ -138,7 +145,7 @@ class Client:
         return documents
 
     def save_document(self, signature_id: str, document_id: str, data: DocumentData) -> None:
-        self._client.req_handler._req(
+        self.req_handler._req(
             "PATCH",
             Endpoint.get_documents(signature_id, document_id),
             RequestHandler.ContentType.JSON,

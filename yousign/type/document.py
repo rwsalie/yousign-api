@@ -16,7 +16,7 @@ class Document:
     def __init__(self, client: 'client.Client', signature_id: str, **kwargs):
         self._client = client
         self._signature_id = client.get_signatures(signature_id)
-        self.id = kwargs['id']
+        self.data = DocumentData(**kwargs)
 
     def update(self) -> None:
         self.data = Document.Data(**self._client.save_document())

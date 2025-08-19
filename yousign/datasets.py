@@ -1,4 +1,4 @@
-from yousign.constants import Field as FieldData, Document
+from yousign.constants import Field as FieldData, Document, Signature
 from abc import ABC
 from typing import Optional, List
 
@@ -7,17 +7,39 @@ from uuid import uuid4
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass(init=False)
+class Info:
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str]
+    locale: str
+
+    def __init__(self, first_name: str, last_name: str, email: str, **kwargs):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        if phone := kwargs.get('phone', None) is not None:
+            self.phone = phone
+        self.locale = kwargs.pop('locale', 'en')
+
+
+@dataclass(init=False)
 class DocumentData:
-    id: Optional[uuid4] = field(init=False)
+    id: Optional[uuid4]
     name: str
     nature: Document.Nature
 
+    def __init__(self, nature, name: Optional[str] = None, **kwargs):
+        self.nature = nature
+        self.name = name
+        self.id = kwargs.pop('id', None)
 
-@dataclass
+
+@dataclass(init=False)
 class SignerData:
     id: uuid4
-    info: ys_const.Info
+    info: Info
     status: ys_const.Signer.Status
     signature_link: str
     signature_link_expiration_date: str
@@ -33,6 +55,15 @@ class SignerData:
     email_notification: str
     pre_identity_verification_required: str
 
+    def __init__(self, **kwargs):
+        self.info = kwargs.pop('info')
+        self.signature_level = kwargs.pop(
+            'signature_level', Signature.Level.ELECTRONIC)
+        self.signature_authentication_mode = kwargs.pop(
+            'signature_authentication_mode', Signature.AuthenticationMode.NONE
+        )
+        self.fields = kwargs.pop('fields', [])
+
 
 @dataclass(init=False)
 class SignatureData:
@@ -43,11 +74,6 @@ class SignatureData:
     created_at: Optional[str]
     ordered_signers: Optional[bool]
     ordered_approvers: Optional[bool]
-    # signers: List[SignerData] = field(default_factory=[])
-    # labels: List[str] = field(default_factory=[])
-    # documents: List[DocumentData] = field(default_factory=[])
-    sender: Optional[str] = field(default_factory=[])
-    # approvers: List[str] = field(default_factory=[])
     source: Optional[str]
     email_custom_note: Optional[str]
     timezone: Optional[str]
@@ -63,9 +89,10 @@ class SignatureData:
     email_notification: Optional[str]
     data: Optional[str]
 
-    def __init__(self, name: str, delivery_mode: ys_const.DeliveryMode, **kwargs):
-        self.name = name
-        self.delivery_mode = delivery_mode
+    def __init__(self, **kwargs):
+        self.name = kwargs.pop('name', 'Unnamed')
+        self.delivery_mode = kwargs.pop(
+            'delivery_mode', ys_const.DeliveryMode.NONE)
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -83,14 +110,20 @@ class Field(ABC):
         variant: Variant
 
     type: FieldData.Type
-    signer_id: uuid4
+    signer_id: Optional[uuid4]
+    document_id: Optional[uuid4]
     page: int
     x: int
     y: int
 
 
-@dataclass
+@dataclass(init=False)
 class SignatureField(Field):
+    signer_id: Optional[uuid4] = None
+    document_id: Optional[uuid4] = None
+    x: int = 30
+    y: int = 120
+    page: int = 1
     type: str = str(FieldData.Type.SIGNATURE)
     height: int = 37
     width: int = 150
@@ -145,4 +178,5 @@ class RadioGroupField(Field):
     optional: bool = False
     name: Optional[str] = None
     read_only: bool = False
+    radios: List[RadioField] = field(default_factory=list)
     radios: List[RadioField] = field(default_factory=list)

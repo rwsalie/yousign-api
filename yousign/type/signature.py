@@ -25,6 +25,15 @@ class Signature:
     def delete(self):
         self.client.delete_signature(self.data.id)
 
+    def activate(self):
+        self.client.change_signature_status(self.data.id, 'activate')
+
+    def reactivate(self):
+        self.client.change_signature_status(self.data.id, 'reactivate')
+
+    def cancel(self):
+        self.client.change_signature_status(self.data.id, 'cancel')
+
     # Signer
 
     def add_signer(self, signer: SignerData):
@@ -39,7 +48,9 @@ class Signature:
     # Document
 
     def add_doc(self, document: DocumentData, file: Tuple[str, TextIOWrapper, str]):
-        self.client.create_document(self.data.id, document, file)
+        doc = self.client.create_document(self.data.id, document, file)
+        self.documents.append(doc)
+        return doc
 
     def rem_document(self, document_id: str):
         self.client.rem(self.data.id, document_id)
