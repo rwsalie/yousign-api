@@ -1,6 +1,6 @@
 from typing import Self
-from yousign.constants import Field
-from yousign.type.field import WidthField
+from yousign3.constants import Field
+from yousign3.type.field import WidthField
 from typing import Optional
 
 

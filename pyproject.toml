@@ -1,15 +1,16 @@
 [project]
-name = "yousign"
+name = "yousign3"
 version = "0.0.0"
 description = "a complete and safe use of YouSign V3 API"
 authors = [
-    {name = "\"rwsalie\"",email = "\"rwsalie@iscarioth.org\""}
+    {name = "rwsalie",email = "rwsalie@iscarioth.org"}
 ]
 license = {text = "ISC"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv (>=0.9.9,<0.10.0)"
+    "dotenv (>=0.9.9,<0.10.0)",
+    "pydantic[email] (>=2.11.7,<3.0.0)"
 ]
 
 

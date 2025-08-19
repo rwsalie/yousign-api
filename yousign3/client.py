@@ -1,12 +1,12 @@
 from typing import Optional, Tuple, Union, List
-from yousign.rest.endpoint import Endpoint
 
-from yousign.type.signature import Signature
-from yousign.type.signer import Signer
-from yousign.type.document import Document
-from yousign.type.field import Field
-from yousign.rest.request_handler import RequestHandler
-from yousign.datasets import SignatureData, SignerData, DocumentData, \
+from yousign3.rest.endpoint import Endpoint
+from yousign3.type.signature import Signature
+from yousign3.type.signer import Signer
+from yousign3.type.document import Document
+from yousign3.type.field import Field
+from yousign3.rest.request_handler import RequestHandler
+from yousign3.datasets import SignatureData, SignerData, DocumentData, \
     Field as FieldData
 from io import TextIOWrapper
 
@@ -32,7 +32,7 @@ class Client:
             "PATCH",
             Endpoint.get_signatures(self.data.id),
             RequestHandler.ContentType.JSON,
-            json=data.__dict__
+            json=data.model_dump_json()
         )
 
     def change_signature_status(self, signature_id: str, query: str) -> None:
@@ -67,7 +67,7 @@ class Client:
             "POST",
             Endpoint.get_signers(signature_id),
             RequestHandler.ContentType.JSON,
-            json={k: v for k, v in data.__dict__.items() if v is not None}
+            json=data.model_dump(exclude_none=True)
         )
         return Signer(self, signature_id, **content)
 
@@ -99,7 +99,7 @@ class Client:
             "PATCH",
             Endpoint.get_signers(signature_id, signer_id),
             RequestHandler.ContentType.JSON,
-            json=data.__dict__
+            json=data.model_dump()
         )
 
     # Document
@@ -110,13 +110,12 @@ class Client:
             document: DocumentData,
             file: Tuple[str, TextIOWrapper, str]
     ) -> Document:
-        print(document.nature)
         content = self.req_handler._req(
             "POST",
             Endpoint.get_documents(signature_id),
             RequestHandler.ContentType.NONE,
             files={"file": file},
-            data=document.__dict__
+            data=document.model_dump(exclude_none=True)
         )
 
         return Document(self, signature_id, **content)
@@ -148,7 +147,7 @@ class Client:
             "PATCH",
             Endpoint.get_documents(signature_id, document_id),
             RequestHandler.ContentType.JSON,
-            json=data.__dict__
+            json=data.model_dump()
         )
 
     # Approvers
@@ -168,7 +167,7 @@ class Client:
             "POST",
             Endpoint.get_fields(signature_id, document_id),
             RequestHandler.ContentType.JSON,
-            json=field.__dict__,
+            json=field.model_json_dump(exclude_none=True),
         )
 
         return Field(self, **content)

@@ -1,6 +1,6 @@
 from typing import Self, Optional
-from yousign.constants import Field as ConstField
-from yousign.datasets import FieldData
+from yousign3.constants import Field as ConstField
+from yousign3.datasets import FieldData
 
 
 class Field:

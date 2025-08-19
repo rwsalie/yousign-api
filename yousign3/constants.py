@@ -1,6 +1,16 @@
 from enum import StrEnum
 
 
+class Local(StrEnum):
+    FR = 'fr'
+    EN = 'en'
+    DE = 'de'
+    IT = 'it'
+    NL = 'nl'
+    ES = 'es'
+    PL = 'pl'
+
+
 class DeliveryMode(StrEnum):
     NONE = 'none',
     EMAIL = 'email'

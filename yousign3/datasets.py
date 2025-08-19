@@ -1,24 +1,35 @@
-from dataclasses import dataclass, field
-from uuid import uuid4
-import yousign.constants as ys_const
-from yousign.constants import Document, Signature, Field, Font
+from yousign3.constants import Document, Signature, \
+    Field, Font, DeliveryMode, Signer
 from typing import Optional, List
 
+from pydantic import BaseModel, EmailStr, HttpUrl
 
-@dataclass
-class Info:
+
+class Info(BaseModel):
     first_name: str
     last_name: str
-    email: str
-    phone_number: Optional[str] = None
+    email: EmailStr
     locale: str = 'en'
+    phone_number: Optional[str] = None
 
 
-@dataclass
-class DocumentData:
+class CustomText(BaseModel):
+    request_subject: Optional[str] = None
+    request_body: Optional[str] = None
+    reminder_subject: Optional[str] = None
+    reminder_body: Optional[str] = None
+
+
+class RedirectURL(BaseModel):
+    success: Optional[HttpUrl] = None
+    error: Optional[HttpUrl] = None
+    decline: Optional[HttpUrl] = None
+
+
+class DocumentData(BaseModel):
     nature: Document.Nature
     name: str = 'Unnamed'
-    id: Optional[uuid4] = None
+    id: Optional[str] = None
     filename: Optional[str] = None
     sha256: Optional[str] = None
     is_protected: Optional[bool] = None
@@ -31,34 +42,45 @@ class DocumentData:
     total_anchors: Optional[int] = None
 
 
-@dataclass
-class SignerData:
+class SignerData(BaseModel):
+    class SmsNotification(BaseModel):
+        class OtpMessage(BaseModel):
+            custom_text: Optional[str] = None
+        otp_message: OtpMessage
+
+    class EmailNotification(BaseModel):
+        disabled: List[str] = []
     info: Info
-    signature_level: ys_const.Signature.Level
-    signature_authentication_mode: Signature.AuthenticationMode = field(
-        default=Signature.AuthenticationMode.NONE)
-    id: Optional[uuid4] = None
-    status: Optional[ys_const.Signer.Status] = None
+    signature_level: Signature.Level
+    signature_authentication_mode: Signature.AuthenticationMode = Signature.AuthenticationMode.NONE
+    id: Optional[str] = None
+    status: Optional[Signer.Status] = None
     signature_link: Optional[str] = None
     signature_link_expiration_date: Optional[str] = None
     signature_image_preview: Optional[str] = None
-    redirect_urls: Optional[str] = None
-    custom_text: Optional[str] = None
-    delivery_mode: Optional[ys_const.DeliveryMode] = None
+    redirect_urls: Optional[RedirectURL] = None
+    custom_text: Optional[CustomText] = None
+    delivery_mode: Optional[DeliveryMode] = None
     identification_attestation_id:  Optional[str] = None
-    sms_notification: Optional[str] = None
-    email_notification: Optional[str] = None
-    pre_identity_verification_required: Optional[str] = None
+    sms_notification: Optional[SmsNotification] = None
+    email_notification: Optional[EmailNotification] = None
+    pre_identity_verification_required: Optional[bool] = None
     fields: Optional[List['FieldData']] = None
 
 
-@dataclass
-class SignatureData:
+class SignatureData(BaseModel):
     name: str
-    delivery_mode: ys_const.DeliveryMode
+    delivery_mode: DeliveryMode
 
-    id: Optional[uuid4] = None
-    status: Optional[ys_const.Signature.Status] = None
+    class EmailNotification(BaseModel):
+        class Sender(BaseModel):
+            type: str
+            custom_name: Optional[str] = None
+        sender: Sender
+        custom_note: Optional[str] = None
+
+    id: Optional[str] = None
+    status: Optional[Signature.Status] = None
     created_at: Optional[str] = None
     ordered_signers: Optional[bool] = None
     ordered_approvers: Optional[bool] = None
@@ -74,26 +96,24 @@ class SignatureData:
     audit_trail_locale: Optional[str] = None
     signers_allowed_to_decline: Optional[bool] = None
     bulk_send_batch_id: Optional[str] = None
-    email_notification: Optional[str] = None
+
+    email_notification: Optional[EmailNotification] = None
     data: Optional[str] = None
 
 
-@dataclass
-class FontVariantData:
+class FontVariantData(BaseModel):
     bold: bool = False
     italic: bool = False
 
 
-@dataclass
-class FontData:
+class FontData(BaseModel):
     family: Font.Family
     color: str
     size: int
     variant: FontVariantData
 
 
-@dataclass
-class RadioData:
+class RadioData(BaseModel):
     x: int
     y: int
     size: int
@@ -101,13 +121,12 @@ class RadioData:
     name: Optional[str] = None
 
 
-@dataclass
-class FieldData:
+class FieldData(BaseModel):
     type: str
     x: int
     y: int = 0
     page: int = 1
-    reason: Optional[int] = None
+    reason: Optional[str] = None
     mention: Optional[str] = None
     width: Optional[int] = None
     height: Optional[int] = None

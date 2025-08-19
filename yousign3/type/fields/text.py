@@ -1,7 +1,7 @@
 from typing import Optional, Self
-from yousign.type.field import WidthField, NameField
-from yousign.constants import Field as ConstField
-from yousign.datasets import FontData
+from yousign3.type.field import WidthField, NameField
+from yousign3.constants import Field as ConstField
+from yousign3.datasets import FontData
 
 
 class ReadOnlyTextField(WidthField):

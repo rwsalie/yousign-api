@@ -1,7 +1,7 @@
 from typing import Self, List
-from yousign.datasets import RadioData
-from yousign.constants import Field
-from yousign.type.field import WidthField, NameField
+from yousign3.datasets import RadioData
+from yousign3.constants import Field
+from yousign3.type.field import WidthField, NameField
 
 
 class RadioGroup(WidthField, NameField):

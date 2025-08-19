@@ -1,8 +1,8 @@
 from typing import Self
-from yousign.datasets import SignerData
+from yousign3.datasets import SignerData
 "avoid circular import"
-import yousign.client as client
-import yousign.type.signature as sign
+import yousign3.client as client
+import yousign3.type.signature as sign
 
 
 class Signer:

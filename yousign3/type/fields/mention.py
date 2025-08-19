@@ -1,6 +1,6 @@
 from typing import Self
-from yousign.constants import Field
-from yousign.type.field import WidthField, NameField
+from yousign3.constants import Field
+from yousign3.type.field import WidthField, NameField
 
 
 class MentionField(WidthField, NameField):

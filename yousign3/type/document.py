@@ -1,10 +1,8 @@
-from yousign.type.field import Field
-from yousign.datasets import DocumentData
+from yousign3.type.field import Field
+from yousign3.datasets import DocumentData
+import yousign3.type.signature as sign
+import yousign3.client as client
 from typing import Optional, List, Union
-
-
-import yousign.type.signature as sign
-import yousign.client as client
 
 
 class Document:

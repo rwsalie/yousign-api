@@ -1,8 +1,8 @@
-from yousign.client import Client
-from yousign.constants import DeliveryMode
-from yousign.datasets import SignatureData, DocumentData, SignerData, Info
-from yousign.type.fields.signature import SignatureField
-from yousign.constants import Document, Signature
+from yousign3.client import Client
+from yousign3.constants import DeliveryMode
+from yousign3.datasets import SignatureData, DocumentData, SignerData, Info
+from yousign3.type.fields.signature import SignatureField
+from yousign3.constants import Document, Signature
 
 from dotenv import dotenv_values
 
@@ -28,16 +28,16 @@ new_document = new_signature.add_doc(
 new_signer = new_signature.add_signer(
     SignerData(
         info=Info(
-            "rwsalie",
-            "someone",
-            "yourmail@mail.com",
-        ).__dict__,
+            first_name="rwsalie",
+            last_name="someone",
+            email="yourmail@mail.com",
+        ),
         signature_level=Signature.Level.ELECTRONIC,
         fields=[
             SignatureField()
             .set_reason("ee")
             .set_document_id(new_document.data.id)
-            .conclude().__dict__
+            .conclude()
         ]
     )
 )

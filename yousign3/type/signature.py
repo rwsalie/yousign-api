@@ -1,9 +1,8 @@
-from typing import Optional, List, Tuple
-from yousign.datasets import SignatureData, SignerData, DocumentData
-
-import yousign.client as ys_client
-import yousign.type.document as doc
-import yousign.type.signer as signer
+from typing import List, Tuple
+from yousign3.datasets import SignatureData, SignerData, DocumentData
+import yousign3.client as ys_client
+import yousign3.type.document as doc
+import yousign3.type.signer as signer
 from io import TextIOWrapper
 
 
