@@ -22,7 +22,7 @@ class Client:
             "POST",
             Endpoint.get_signatures(),
             RequestHandler.ContentType.JSON,
-            json=data.__dict__
+            json={k: v for k, v in data.__dict__.items() if v is not None}
         )
 
         return Signature(self, **content)
@@ -32,7 +32,7 @@ class Client:
             "PATCH",
             Endpoint.get_signatures(self.data.id),
             RequestHandler.ContentType.JSON,
-            json=self.data.__dict__
+            json=data.__dict__
         )
 
     def change_signature_status(self, signature_id: str, query: str) -> None:
@@ -63,12 +63,11 @@ class Client:
     # Signers
 
     def create_signer(self, signature_id: str, data: SignerData) -> Signer:
-        print(data.fields)
         content = self.req_handler._req(
             "POST",
             Endpoint.get_signers(signature_id),
             RequestHandler.ContentType.JSON,
-            json=data.__dict__
+            json={k: v for k, v in data.__dict__.items() if v is not None}
         )
         return Signer(self, signature_id, **content)
 

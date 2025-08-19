@@ -10,17 +10,20 @@ from io import TextIOWrapper
 class Signature:
     client: 'ys_client.Client'
     data: SignatureData
-    signers: List['signer.Signer']
-    documents: List['doc.Document']
+    signers: List['signer.Signer'] = []
+    documents: List['doc.Document'] = []
 
     def __init__(self, client: 'ys_client.Client', **kwargs):
         self.client = client
+        signers = kwargs.pop('signers', [])
+        documents = kwargs.pop('documents', [])
+        labels = kwargs.pop('labels', [])
+        approvers = kwargs.pop('approvers', [])
+        fields = kwargs.pop('fields', [])
+        sender = kwargs.pop('sender', [])
+        decline_information = kwargs.pop('decline_information', None)
+
         self.data = SignatureData(**kwargs)
-        self.signers = []
-        self.documents = []
-        self.labels = []
-        self.approvers = []
-        self.fields = []
 
     def delete(self):
         self.client.delete_signature(self.data.id)

@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, Optional
 from yousign.constants import Field as ConstField
 from yousign.datasets import FieldData
 
@@ -8,12 +8,24 @@ class Field:
     x: int
     y: int
     page: int
+    document_id: Optional[str]
+    signer_id: Optional[str]
 
     def __init__(self, _type: ConstField.Type):
         self.type = _type
         self.x = 0
         self.y = 0
         self.page = 1
+        self.document_id = None
+        self.signer_id = None
+
+    def set_document_id(self, document_id: str) -> Self:
+        self.document_id = document_id
+        return self
+
+    def set_signer_id(self, signer_id: str) -> Self:
+        self.signer_id = signer_id
+        return self
 
     def set_x(self, x: int) -> Self:
         self.x = x

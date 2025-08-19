@@ -10,15 +10,25 @@ class Info:
     first_name: str
     last_name: str
     email: str
-    locale: str
-    phone: Optional[str] = None
+    phone_number: Optional[str] = None
+    locale: str = 'en'
 
 
 @dataclass
 class DocumentData:
-    name: str
     nature: Document.Nature
+    name: str = 'Unnamed'
     id: Optional[uuid4] = None
+    filename: Optional[str] = None
+    sha256: Optional[str] = None
+    is_protected: Optional[bool] = None
+    is_signed: Optional[bool] = None
+    is_locked: Optional[bool] = None
+    created_at: Optional[str] = None
+    total_pages: Optional[int] = None
+    initials: Optional[str] = None
+    content_type: Optional[str] = None
+    total_anchors: Optional[int] = None
 
 
 @dataclass
@@ -39,6 +49,7 @@ class SignerData:
     sms_notification: Optional[str] = None
     email_notification: Optional[str] = None
     pre_identity_verification_required: Optional[str] = None
+    fields: Optional[List['FieldData']] = None
 
 
 @dataclass
@@ -92,7 +103,7 @@ class RadioData:
 
 @dataclass
 class FieldData:
-    type: Field.Type
+    type: str
     x: int
     y: int = 0
     page: int = 1
