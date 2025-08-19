@@ -57,5 +57,17 @@ class Document:
         ATTACHMENT = 'attachment'
         SIGNABLE = 'signable_document'
 
-        def __repr__(self):
-            return f"'{self.value}'"
+
+class Font:
+    class Family(StrEnum):
+        INCONSOLATA = 'Inconsolata'
+        OPEN_SANS = 'Open Sans'
+        LATO = 'Lato'
+        RALEWAY = 'Raleway'
+        MERRIWEATHER = 'Merriweather'
+        EB_GARAMOND = 'EB Garamond'
+        COMIC_NEUE = 'Comic Neue'
+        MONACO = 'Monaco'
+        HELVETICA = 'Helvetica'
+        COURIER = 'Courier'
+        TIMES_ROMAN = 'Times Roman'

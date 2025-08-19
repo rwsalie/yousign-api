@@ -1,182 +1,116 @@
-from yousign.constants import Field as FieldData, Document, Signature
-from abc import ABC
+from dataclasses import dataclass, field
+from uuid import uuid4
+import yousign.constants as ys_const
+from yousign.constants import Document, Signature, Field, Font
 from typing import Optional, List
 
-import yousign.constants as ys_const
-from uuid import uuid4
-from dataclasses import dataclass, field
 
-
-@dataclass(init=False)
+@dataclass
 class Info:
     first_name: str
     last_name: str
     email: str
-    phone: Optional[str]
     locale: str
-
-    def __init__(self, first_name: str, last_name: str, email: str, **kwargs):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        if phone := kwargs.get('phone', None) is not None:
-            self.phone = phone
-        self.locale = kwargs.pop('locale', 'en')
+    phone: Optional[str] = None
 
 
-@dataclass(init=False)
+@dataclass
 class DocumentData:
-    id: Optional[uuid4]
     name: str
     nature: Document.Nature
-
-    def __init__(self, nature, name: Optional[str] = None, **kwargs):
-        self.nature = nature
-        self.name = name
-        self.id = kwargs.pop('id', None)
+    id: Optional[uuid4] = None
 
 
-@dataclass(init=False)
+@dataclass
 class SignerData:
-    id: uuid4
     info: Info
-    status: ys_const.Signer.Status
-    signature_link: str
-    signature_link_expiration_date: str
-    signature_image_preview: str
-    redirect_urls: str
-    custom_text: str
-    delivery_mode: ys_const.DeliveryMode
-    fields: List[str]
     signature_level: ys_const.Signature.Level
-    signature_authentication_mode: ys_const.Signature.AuthenticationMode
-    identification_attestation_id:  str
-    sms_notification: str
-    email_notification: str
-    pre_identity_verification_required: str
+    signature_authentication_mode: Signature.AuthenticationMode = field(
+        default=Signature.AuthenticationMode.NONE)
+    id: Optional[uuid4] = None
+    status: Optional[ys_const.Signer.Status] = None
+    signature_link: Optional[str] = None
+    signature_link_expiration_date: Optional[str] = None
+    signature_image_preview: Optional[str] = None
+    redirect_urls: Optional[str] = None
+    custom_text: Optional[str] = None
+    delivery_mode: Optional[ys_const.DeliveryMode] = None
+    identification_attestation_id:  Optional[str] = None
+    sms_notification: Optional[str] = None
+    email_notification: Optional[str] = None
+    pre_identity_verification_required: Optional[str] = None
 
-    def __init__(self, **kwargs):
-        self.info = kwargs.pop('info')
-        self.signature_level = kwargs.pop(
-            'signature_level', Signature.Level.ELECTRONIC)
-        self.signature_authentication_mode = kwargs.pop(
-            'signature_authentication_mode', Signature.AuthenticationMode.NONE
-        )
-        self.fields = kwargs.pop('fields', [])
 
-
-@dataclass(init=False)
+@dataclass
 class SignatureData:
-    id: Optional[uuid4]
-    status: Optional[ys_const.Signature.Status]
-    name: str = field(init=True)
-    delivery_mode: ys_const.DeliveryMode = field(init=True)
-    created_at: Optional[str]
-    ordered_signers: Optional[bool]
-    ordered_approvers: Optional[bool]
-    source: Optional[str]
-    email_custom_note: Optional[str]
-    timezone: Optional[str]
-    reminder_settings: Optional[str]
-    expiration_date: Optional[str]
-    external_id: Optional[str]
-    branding_id: Optional[str]
-    custom_experience_id: Optional[str]
-    workspace_id: Optional[str]
-    audit_trail_locale: Optional[str]
-    signers_allowed_to_decline: Optional[bool]
-    bulk_send_batch_id: Optional[str]
-    email_notification: Optional[str]
-    data: Optional[str]
+    name: str
+    delivery_mode: ys_const.DeliveryMode
 
-    def __init__(self, **kwargs):
-        self.name = kwargs.pop('name', 'Unnamed')
-        self.delivery_mode = kwargs.pop(
-            'delivery_mode', ys_const.DeliveryMode.NONE)
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    id: Optional[uuid4] = None
+    status: Optional[ys_const.Signature.Status] = None
+    created_at: Optional[str] = None
+    ordered_signers: Optional[bool] = None
+    ordered_approvers: Optional[bool] = None
+    source: Optional[str] = None
+    email_custom_note: Optional[str] = None
+    timezone: Optional[str] = None
+    reminder_settings: Optional[str] = None
+    expiration_date: Optional[str] = None
+    external_id: Optional[str] = None
+    branding_id: Optional[str] = None
+    custom_experience_id: Optional[str] = None
+    workspace_id: Optional[str] = None
+    audit_trail_locale: Optional[str] = None
+    signers_allowed_to_decline: Optional[bool] = None
+    bulk_send_batch_id: Optional[str] = None
+    email_notification: Optional[str] = None
+    data: Optional[str] = None
 
 
-class Field(ABC):
-    @dataclass
-    class Font:
-        class Variant:
-            italic: bool = False
-            bold: bool = False
+@dataclass
+class FontVariantData:
+    bold: bool = False
+    italic: bool = False
 
-        family: str
-        color: str
-        size: int
-        variant: Variant
 
-    type: FieldData.Type
-    signer_id: Optional[uuid4]
-    document_id: Optional[uuid4]
-    page: int
+@dataclass
+class FontData:
+    family: Font.Family
+    color: str
+    size: int
+    variant: FontVariantData
+
+
+@dataclass
+class RadioData:
     x: int
     y: int
+    size: int
+    default_checked: bool = False
+    name: Optional[str] = None
 
 
-@dataclass(init=False)
-class SignatureField(Field):
-    signer_id: Optional[uuid4] = None
-    document_id: Optional[uuid4] = None
-    x: int = 30
-    y: int = 120
+@dataclass
+class FieldData:
+    type: Field.Type
+    x: int
+    y: int = 0
     page: int = 1
-    type: str = str(FieldData.Type.SIGNATURE)
-    height: int = 37
-    width: int = 150
-    reason: Optional[str] = None
-
-
-@dataclass
-class MentionField(Field):
-    type: str = str(FieldData.Type.MENTION)
-    mention: str = ''
-    font: Optional[Field.Font] = None
+    reason: Optional[int] = None
+    mention: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    document_id: Optional[str] = None
+    signer_id: Optional[str] = None
+    font: Optional[FontData] = None
     name: Optional[str] = None
-
-
-@dataclass
-class TextField(Field):
-    type: str = str(FieldData.Type.TEXT)
-    max_length: int = 1
-    question: str = 255
+    max_length: Optional[int] = None
+    question: Optional[str] = None
     instruction: Optional[str] = None
-    font: Optional[Field.Font] = None
-    name: Optional[str] = None
-    default_value: Optional[str] = None
-    read_only: bool = False
-
-
-@dataclass
-class ReadOnlyTextField(Field):
-    type: str = FieldData.Type.READ_ONLY
-    text: str = ""
-    font: Optional[Field.Font] = None
-
-
-@dataclass
-class CheckboxField(Field):
-    type: str = FieldData.Type.CHECKBOX
-    size: int = 24
-    optional: bool = False
-    name: Optional[str] = None
-    checked: bool = False
-    read_only: bool = False
-
-
-@dataclass
-class RadioGroupField(Field):
-    @dataclass
-    class RadioField(Field):
-        size: int = 24
-        default_checked: bool = False
-
-    type = FieldData.Type.RADIO_GROUP
-    optional: bool = False
-    name: Optional[str] = None
-    read_only: bool = False
-    radios: List[RadioField] = field(default_factory=list)
-    radios: List[RadioField] = field(default_factory=list)
+    optional: Optional[bool] = None
+    default_value: Optional[bool] = None
+    read_only: Optional[bool] = None
+    size: Optional[int] = None
+    checked: Optional[bool] = None
+    radios: Optional[List[RadioData]] = None
+    text: Optional[str] = None

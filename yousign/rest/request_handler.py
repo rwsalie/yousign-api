@@ -42,7 +42,6 @@ class RequestHandler:
         if content_type != RequestHandler.ContentType.NONE:
             kwargs['headers']['content-type'] = str(content_type)
 
-        print(kwargs.get('json'))
         res = req(method, url, **kwargs)
 
         if self.debug:
