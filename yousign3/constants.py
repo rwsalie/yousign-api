@@ -1,4 +1,11 @@
-from enum import StrEnum
+import sys
+
+if sys.version > (3,10,0):
+    from enum import
+else:
+    from enum import Enum
+    class StrEnum(str,Enum):
+        pass
 
 
 class Local(StrEnum):
