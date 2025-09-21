@@ -1,7 +1,7 @@
 import sys
 
 if sys.version > (3,10,0):
-    from enum import
+    from enum import StrEnum
 else:
     from enum import Enum
     class StrEnum(str,Enum):
