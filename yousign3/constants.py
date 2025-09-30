@@ -1,6 +1,6 @@
 import sys
 
-if sys.version > (3,10,0):
+if sys.version_info > (3,10,0):
     from enum import StrEnum
 else:
     from enum import Enum
